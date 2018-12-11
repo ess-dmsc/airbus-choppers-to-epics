@@ -4,18 +4,18 @@ from chopper import Chopper
 
 prefix = "V20:AIRBUS:CHOPPER"
 pvdb = {
-    "1:SPD": {"type": "float"},
-    "1:PHS": {"type": "float"},
-    "1:PHS:SP": {"type": "float"},
-    "2:SPD": {"type": "float"},
-    "2:PHS": {"type": "float"},
-    "2:PHS:SP": {"type": "float"},
-    "3:SPD": {"type": "float"},
-    "3:PHS": {"type": "float"},
-    "3:PHS:SP": {"type": "float"},
-    "4:SPD": {"type": "float"},
-    "4:PHS": {"type": "float"},
-    "4:PHS:SP": {"type": "float"},
+    "1:SPD": {"type": "float", "scan": 5},
+    "1:PHS": {"type": "float", "scan": 5},
+    "1:PHS:SP": {"type": "float", "scan": 5},
+    "2:SPD": {"type": "float", "scan": 5},
+    "2:PHS": {"type": "float", "scan": 5},
+    "2:PHS:SP": {"type": "float", "scan": 5},
+    "3:SPD": {"type": "float", "scan": 5},
+    "3:PHS": {"type": "float", "scan": 5},
+    "3:PHS:SP": {"type": "float", "scan": 5},
+    "4:SPD": {"type": "float", "scan": 5},
+    "4:PHS": {"type": "float", "scan": 5},
+    "4:PHS:SP": {"type": "float", "scan": 5},
 }
 
 
