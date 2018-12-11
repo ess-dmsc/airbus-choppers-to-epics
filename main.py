@@ -41,6 +41,14 @@ class ChopperDriver(Driver):
 
 
 if __name__ == "__main__":
+    print("Airbus Choppers to EPICS")
+    print("Checking connection to database...")
+    ans = Chopper(1)._get_data()
+    if ans is not None and len(ans) > 0:
+        print("...connection established")
+    else:
+        raise Exception("Could not connect to database")
+
     server = SimpleServer()
     server.createPV(prefix, pvdb)
     driver = ChopperDriver()
