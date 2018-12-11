@@ -10,6 +10,12 @@ pvdb = {
     "2:SPD": {"type": "float"},
     "2:PHS": {"type": "float"},
     "2:PHS:SP": {"type": "float"},
+    "3:SPD": {"type": "float"},
+    "3:PHS": {"type": "float"},
+    "3:PHS:SP": {"type": "float"},
+    "4:SPD": {"type": "float"},
+    "4:PHS": {"type": "float"},
+    "4:PHS:SP": {"type": "float"},
 }
 
 
@@ -18,6 +24,8 @@ class ChopperDriver(Driver):
         super(ChopperDriver, self).__init__()
         self.chopper1 = Chopper(1)
         self.chopper2 = Chopper(2)
+        self.chopper3 = Chopper(3)
+        self.chopper4 = Chopper(4)
 
     def read(self, reason):
         try:
@@ -33,6 +41,18 @@ class ChopperDriver(Driver):
                 value = self.chopper2.phase
             elif reason == "2:PHS:SP":
                 value = self.chopper2.req_phase
+            elif reason == "3:SPD":
+                value = self.chopper3.speed
+            elif reason == "3:PHS":
+                value = self.chopper3.phase
+            elif reason == "3:PHS:SP":
+                value = self.chopper3.req_phase
+            elif reason == "4:SPD":
+                value = self.chopper4.speed
+            elif reason == "4:PHS":
+                value = self.chopper4.phase
+            elif reason == "4:PHS:SP":
+                value = self.chopper4.req_phase
             else:
                 value = self.getParam(reason)
             return value
