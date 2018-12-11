@@ -2,25 +2,37 @@ from pcaspy import Driver, SimpleServer
 from chopper import Chopper
 
 
-prefix = "V20:AIRBUS:CHOPPER1:"
-pvdb = {"SPD:SP": {"type": 'float'}, "SPD": {"type": 'float'}}
+prefix = "V20:AIRBUS:CHOPPER"
+pvdb = {
+    "1:SPD": {"type": "float"},
+    "1:PHS": {"type": "float"},
+    "1:PHS:SP": {"type": "float"},
+    "2:SPD": {"type": "float"},
+    "2:PHS": {"type": "float"},
+    "2:PHS:SP": {"type": "float"},
+}
 
 
 class ChopperDriver(Driver):
-    def __init__(self, port):
+    def __init__(self):
         super(ChopperDriver, self).__init__()
-        self.chopper = Chopper(port)
+        self.chopper1 = Chopper(1)
+        self.chopper2 = Chopper(2)
 
     def read(self, reason):
         try:
-            if reason == 'SPD':
-                value = self.chopper.speed
-            elif reason == 'SPD:SP':
-                value = self.chopper.req_speed
-            elif reason == 'PHS':
-                value = self.chopper.phase
-            elif reason == 'PHS:SP':
-                value = self.chopper.req_phase
+            if reason == "1:SPD":
+                value = self.chopper1.speed
+            elif reason == "1:PHS":
+                value = self.chopper1.phase
+            elif reason == "1:PHS:SP":
+                value = self.chopper1.req_phase
+            elif reason == "2:SPD":
+                value = self.chopper2.speed
+            elif reason == "2:PHS":
+                value = self.chopper2.phase
+            elif reason == "2:PHS:SP":
+                value = self.chopper2.req_phase
             else:
                 value = self.getParam(reason)
             return value
@@ -31,7 +43,7 @@ class ChopperDriver(Driver):
 if __name__ == "__main__":
     server = SimpleServer()
     server.createPV(prefix, pvdb)
-    driver = ChopperDriver("COM1")
+    driver = ChopperDriver()
 
     # process CA transactions
     while True:
