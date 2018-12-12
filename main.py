@@ -1,63 +1,50 @@
 from pcaspy import Driver, SimpleServer
 from chopper import Chopper
+from threading import Thread, RLock
+import time
 
 
 prefix = "V20:AIRBUS:CHOPPER"
 pvdb = {
-    "1:SPD": {"type": "float", "scan": 5},
-    "1:PHS": {"type": "float", "scan": 5},
-    "1:PHS:SP": {"type": "float", "scan": 5},
-    "2:SPD": {"type": "float", "scan": 5},
-    "2:PHS": {"type": "float", "scan": 5},
-    "2:PHS:SP": {"type": "float", "scan": 5},
-    "3:SPD": {"type": "float", "scan": 5},
-    "3:PHS": {"type": "float", "scan": 5},
-    "3:PHS:SP": {"type": "float", "scan": 5},
-    "4:SPD": {"type": "float", "scan": 5},
-    "4:PHS": {"type": "float", "scan": 5},
-    "4:PHS:SP": {"type": "float", "scan": 5},
+    "1:SPD": {"type": "float"},
+    "1:PHS": {"type": "float"},
+    "1:PHS:SP": {"type": "float"},
+    "2:SPD": {"type": "float"},
+    "2:PHS": {"type": "float"},
+    "2:PHS:SP": {"type": "float"},
+    "3:SPD": {"type": "float"},
+    "3:PHS": {"type": "float"},
+    "3:PHS:SP": {"type": "float"},
+    "4:SPD": {"type": "float"},
+    "4:PHS": {"type": "float"},
+    "4:PHS:SP": {"type": "float"},
 }
 
 
 class ChopperDriver(Driver):
     def __init__(self):
         super(ChopperDriver, self).__init__()
-        self.chopper1 = Chopper(1)
-        self.chopper2 = Chopper(2)
-        self.chopper3 = Chopper(3)
-        self.chopper4 = Chopper(4)
+        self.choppers = [Chopper(1), Chopper(2), Chopper(3), Chopper(4)]
+
+        self.monitor_lock = RLock()
+        monitor_thread = Thread(target=self.update_monitors, args=())
+        monitor_thread.daemon = True  # Daemonise thread
+        monitor_thread.start()
 
     def read(self, reason):
-        try:
-            if reason == "1:SPD":
-                value = self.chopper1.speed
-            elif reason == "1:PHS":
-                value = self.chopper1.phase
-            elif reason == "1:PHS:SP":
-                value = self.chopper1.req_phase
-            elif reason == "2:SPD":
-                value = self.chopper2.speed
-            elif reason == "2:PHS":
-                value = self.chopper2.phase
-            elif reason == "2:PHS:SP":
-                value = self.chopper2.req_phase
-            elif reason == "3:SPD":
-                value = self.chopper3.speed
-            elif reason == "3:PHS":
-                value = self.chopper3.phase
-            elif reason == "3:PHS:SP":
-                value = self.chopper3.req_phase
-            elif reason == "4:SPD":
-                value = self.chopper4.speed
-            elif reason == "4:PHS":
-                value = self.chopper4.phase
-            elif reason == "4:PHS:SP":
-                value = self.chopper4.req_phase
-            else:
-                value = self.getParam(reason)
-            return value
-        except Exception as err:
-            print("Could not read value: {}".format(err))
+        value = self.getParam(reason)
+        return value
+
+    def update_monitors(self):
+        while True:
+            with self.monitor_lock:
+                for ch in self.choppers:
+                    ch.update()
+                    self.setParam("{}:SPD".format(ch.chopper_num), ch.speed)
+                    self.setParam("{}:PHS".format(ch.chopper_num), ch.phase)
+                    self.setParam("{}:PHS:SP".format(ch.chopper_num), ch.req_phase)
+                self.updatePVs()
+            time.sleep(1)
 
 
 if __name__ == "__main__":

@@ -42,7 +42,7 @@ class Chopper:
                 conn.close()
         return data
 
-    def _update(self):
+    def update(self):
         if time.time() > self._last_update + CACHE_LIFETIME:
             # Update cache
             self._cache = self._get_data()
@@ -50,15 +50,12 @@ class Chopper:
 
     @property
     def speed(self):
-        self._update()
         return self._cache[0]
 
     @property
     def phase(self):
-        self._update()
         return self._cache[1]
 
     @property
     def req_phase(self):
-        self._update()
         return self._cache[2]
